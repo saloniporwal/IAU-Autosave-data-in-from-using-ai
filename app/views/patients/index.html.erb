@@ -1,0 +1,32 @@
+<h1>Patients</h1>
+
+<%= link_to "Create Test Patient", "#" %>
+
+<hr>
+
+<table border="1" cellpadding="8">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+      <th>Date of Birth</th>
+      <th>Gender</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @patients.each do |patient| %>
+      <tr>
+        <td><%= patient.id %></td>
+        <td><%= patient.name %></td>
+        <td><%= patient.date_of_birth %></td>
+        <td><%= patient.gender %></td>
+        <td>
+          <%= link_to "Open Patient",
+                patient_path(patient) %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

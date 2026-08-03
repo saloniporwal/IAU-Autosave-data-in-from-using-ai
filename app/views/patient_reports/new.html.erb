@@ -1,0 +1,47 @@
+<h1>Upload Patient Report</h1>
+
+<h3>
+  Patient:
+  <%= @patient.name %>
+</h3>
+
+<hr>
+
+<%= form_with model: [@patient, @patient_report],
+              local: true do |form| %>
+
+  <div>
+    <%= form.label :report_type, "Report Type" %>
+
+    <%= form.select :report_type,
+      [
+        ["Biopsy", "biopsy"],
+        ["CT Scan", "ct_scan"],
+        ["MRI", "mri"],
+        ["PET CT", "pet_ct"],
+        ["Blood Report", "blood_report"],
+        ["Discharge Summary", "discharge_summary"],
+        ["Pathology", "pathology"],
+        ["Other", "other"]
+      ],
+      { include_blank: "Select Report Type" } %>
+  </div>
+
+  <br>
+
+  <div>
+    <%= form.label :file, "Patient Report" %>
+
+    <%= form.file_field :file %>
+  </div>
+
+  <br>
+
+  <%= form.submit "Upload Report" %>
+
+<% end %>
+
+<br>
+
+<%= link_to "Back to Patient",
+      patient_path(@patient) %>

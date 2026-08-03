@@ -1,0 +1,65 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  \: MyString
+  taken_by: MyString
+  \: MyString
+  given_by: MyString
+  \: MyString
+  relation_with_patient: MyString
+  \: MyString
+  vitals_bp_systolic: MyString
+  \: MyString
+  vitals_bp_diastolic: MyString
+  \: MyString
+  vitals_pulse: MyString
+  \: MyString
+  vitals_respiratory_rate: MyString
+  \: MyString
+  vitals_temperature: MyString
+  \: MyString
+  vitals_spo2: MyString
+  \: MyString
+  vitals_pain_score: MyString
+  \: MyString
+  pallor: false
+  \: MyString
+  icterus: false
+  \: MyString
+  pedal_edema: false
+  \: MyString
+  diagnosis: MyText
+  \: MyString
+  chief_complaints: MyText
+
+two:
+  \: MyString
+  taken_by: MyString
+  \: MyString
+  given_by: MyString
+  \: MyString
+  relation_with_patient: MyString
+  \: MyString
+  vitals_bp_systolic: MyString
+  \: MyString
+  vitals_bp_diastolic: MyString
+  \: MyString
+  vitals_pulse: MyString
+  \: MyString
+  vitals_respiratory_rate: MyString
+  \: MyString
+  vitals_temperature: MyString
+  \: MyString
+  vitals_spo2: MyString
+  \: MyString
+  vitals_pain_score: MyString
+  \: MyString
+  pallor: false
+  \: MyString
+  icterus: false
+  \: MyString
+  pedal_edema: false
+  \: MyString
+  diagnosis: MyText
+  \: MyString
+  chief_complaints: MyText

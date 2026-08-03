@@ -1,0 +1,144 @@
+<h1>Patient Details</h1>
+
+<p>
+  <strong>Name:</strong>
+  <%= @patient.name %>
+</p>
+
+<p>
+  <strong>Date of Birth:</strong>
+  <%= @patient.date_of_birth %>
+</p>
+
+<p>
+  <strong>Gender:</strong>
+  <%= @patient.gender %>
+</p>
+
+<hr>
+
+<h2>Patient Reports</h2>
+
+<%= link_to "Upload New Report",
+      new_patient_patient_report_path(@patient) %>
+
+<br><br>
+
+<% if @patient.patient_reports.any? %>
+
+  <table border="1" cellpadding="8">
+
+    <thead>
+      <tr>
+        <th>Report Type</th>
+        <th>File</th>
+        <th>AI Processed</th>
+      </tr>
+    </thead>
+
+    <tbody>
+
+      <% @patient.patient_reports.each do |report| %>
+
+        <tr>
+
+          <td>
+            <%= report.report_type %>
+          </td>
+
+          <td>
+            <% if report.file.attached? %>
+              <%= link_to report.file.filename.to_s,
+                    rails_blob_path(report.file, disposition: "attachment") %>
+            <% else %>
+              No file
+            <% end %>
+          </td>
+
+          <td>
+            <%= report.ai_processed ? "Yes" : "No" %>
+          </td>
+
+        </tr>
+
+      <% end %>
+
+    </tbody>
+
+  </table>
+
+<% else %>
+
+  <p>No reports uploaded yet.</p>
+
+<% end %>
+
+<% @patient.patient_reports.each do |report| %>
+
+  <% if report.ai_processed && report.ai_result.present? %>
+
+    <% ai = JSON.parse(report.ai_result) %>
+
+    <fieldset>
+      <legend>
+        <h3>AI Extracted Information</h3>
+      </legend>
+
+      <table width="100%">
+
+        <tr>
+          <td width="250px"><label>Patient Name</label></td>
+          <td><%= ai["patient_name"] %></td>
+        </tr>
+
+        <tr>
+          <td><label>Age</label></td>
+          <td><%= ai["age"] %></td>
+        </tr>
+
+        <tr>
+          <td><label>Sex</label></td>
+          <td><%= ai["sex"] %></td>
+        </tr>
+
+        <tr>
+          <td><label>MRN</label></td>
+          <td><%= ai["mrn"] %></td>
+        </tr>
+
+        <tr>
+          <td><label>Specimen</label></td>
+          <td><%= ai["specimen"] %></td>
+        </tr>
+
+        <tr>
+          <td><label>Procedure Date</label></td>
+          <td><%= ai["procedure_date"] %></td>
+        </tr>
+
+        <tr>
+          <td><label>Histology</label></td>
+          <td><%= ai["histology"] %></td>
+        </tr>
+
+        <tr>
+          <td><label>Differentiation</label></td>
+          <td><%= ai["differentiation"] %></td>
+        </tr>
+
+        <tr>
+          <td><label>Lymphovascular Invasion</label></td>
+          <td><%= ai["lymphovascular_invasion"] %></td>
+        </tr>
+
+        <tr>
+          <td><label>Perineural Invasion</label></td>
+          <td><%= ai["perineural_invasion"] %></td>
+        </tr>
+
+      </table>
+    </fieldset>
+
+  <% end %>
+
+<% end %>
