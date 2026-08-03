@@ -1,5 +1,4 @@
 <h1>IAU Auto-Fill</h1>
-
 <hr>
 
 <!-- ========================================================= -->
@@ -7,36 +6,16 @@
 <!-- ========================================================= -->
 
 <h2>Step 1 - Source Document</h2>
-
 <div>
   <label for="source_text">
     <strong>Paste Patient Document</strong>
   </label>
 </div>
-
 <br>
-
-<textarea
-  id="source_text"
-  rows="12"
-  style="width:100%;"
-  placeholder="Paste discharge summary, diagnosis report, prescription, clinical notes etc."
-></textarea>
-
+<textarea id="source_text" rows="12" style="width:100%;" placeholder="Paste discharge summary, diagnosis report, prescription, clinical notes etc."></textarea>
 <br><br>
-
-<button
-  type="button"
-  id="extract_button"
-  onclick="extractWithAI()">
-  Extract With AI
-</button>
-
-<div
-  id="extract_status"
-  style="margin-top:15px; font-weight:bold;">
-</div>
-
+<button type="button" id="extract_button" onclick="extractWithAI()">Extract With AI</button>
+<div id="extract_status" style="margin-top:15px; font-weight:bold;"></div>
 <hr>
 
 <!-- ========================================================= -->
@@ -46,273 +25,184 @@
 <h2>Step 2 - IAU Form</h2>
 
 <%= form_for [@patient, @iau] do |f| %>
-
-  <table
-    width="100%"
-    border="1"
-    cellpadding="8"
-    cellspacing="0"
-    style="border-collapse:collapse;">
+  <table width="100%" border="1" cellpadding="8" cellspacing="0" style="border-collapse:collapse;">
 
     <!-- Taken By -->
     <tr>
-      <td width="250">
+      <td width="250" style="padding-left:25px;">
         <label>Taken By</label>
       </td>
-
-      <td>
-        <%= f.text_field :taken_by,
-              id: "iau_taken_by",
-              style: "width:300px;" %>
+      <td style="padding-left:26px;">
+        <%= f.text_field :taken_by, id: "iau_taken_by", style: "width:300px;" %>
       </td>
     </tr>
-
 
     <!-- Given By -->
     <tr>
-      <td>
+      <td style="padding-left:25px;">
         <label>Given By</label>
       </td>
-
-      <td>
-        <%= f.text_field :given_by,
-              id: "iau_given_by",
-              style: "width:300px;" %>
+      <td style="padding-left:26px;">
+        <%= f.text_field :given_by, id: "iau_given_by", style: "width:300px;" %>
       </td>
     </tr>
-
 
     <!-- Relationship -->
     <tr>
-      <td>
+      <td style="padding-left:25px;">
         <label>Relationship with Patient</label>
       </td>
-
-      <td>
-        <%= f.text_field :relation_with_patient,
-              id: "iau_relation_with_patient",
-              style: "width:300px;" %>
+      <td style="padding-left:26px;">
+        <%= f.select :relation_with_patient,
+              [['Select',''],['Mother','mother'],['Father','father'],['Son','son'],
+              ['Daughter','daughter'],['Wife','wife'],['Husband','husband'],
+              ['Friend','friend'],['Relative','relative'],['Other','other']],
+              {},
+              { id: "iau_relation_with_patient", onchange: "document.getElementById('other_relation_box').style.display = (this.value == 'other' ? 'table-cell' : 'none')", style: "width:150px;" } %>
+        <span id="other_relation_box" style="padding-left:20px; display:none;">
+          <%= f.text_field :other_relation_with_patient, id: "iau_other_relation", style: "width:180px;" %>
+        </span>
       </td>
     </tr>
-
 
     <!-- ===================================================== -->
     <!-- VITALS -->
     <!-- ===================================================== -->
-
     <tr>
-      <td colspan="2">
-        <strong>Vitals</strong>
+      <td colspan="2" style="padding-left:25px;">
+        <label style="color:#5a90cc;"><b>Vitals</b></label>
+        <table class="vitals-table">
+          <tr>
+            <th>Vitals</th>
+            <th>Values</th>
+            <th>Units</th>
+          </tr>
+
+          <tr>
+            <td style="text-align: left;">BP</td>
+            <td style="text-align: center; vertical-align: middle;">
+              <div style="display: flex; justify-content: center; align-items: flex-end; gap: 10px;">
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                  <span style="font-size: 11px; color: #111111; font-weight: bold; margin-bottom: 2px;">Systolic</span>
+                  <%= f.text_field :vitals_bp_systolic, id: "iau_vitals_bp_systolic", style: "width:80px; text-align: center; border: 1px solid #5a90cc;" %>
+                </div>
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                  <span style="font-size: 11px; color: #111111; font-weight: bold; margin-bottom: 2px;">Diastolic</span>
+                  <%= f.text_field :vitals_bp_diastolic, id: "iau_vitals_bp_diastolic", style: "width:80px; text-align: center; border: 1px solid #5a90cc;" %>
+                </div>
+              </div>
+            </td>
+            <td style="vertical-align: bottom; padding-bottom: 10px;">mmHg</td>
+          </tr>
+
+          <tr>
+            <td style="text-align: left; vertical-align: middle;">Pulse</td>
+            <td><%= f.text_field :vitals_pulse, id: "iau_vitals_pulse" %></td>
+            <td>beats/min</td>
+          </tr>
+
+          <tr>
+            <td style="text-align: left; vertical-align: middle;">Respiratory Rate</td>
+            <td><%= f.text_field :vitals_respiratory_rate, id: "iau_vitals_respiratory_rate" %></td>
+            <td>breaths/min</td>
+          </tr>
+
+          <tr>
+            <td style="text-align: left; vertical-align: middle;">Temperature</td>
+            <td><%= f.text_field :vitals_temperature, id: "iau_vitals_temperature" %></td>
+            <td>°C/°F</td>
+          </tr>
+
+          <tr>
+            <td style="text-align: left; vertical-align: middle;">SpO₂</td>
+            <td><%= f.text_field :vitals_spo2, id: "iau_vitals_spo2" %></td>
+            <td><%= f.text_field :spo2_units, id: "iau_spo2_units" %></td>
+          </tr>
+
+          <tr>
+            <td style="text-align: left; vertical-align: middle;">Performance Status</td>
+            <td><%= f.text_field :vitals_perform_status, id: "iau_vitals_perform_status" %></td>
+            <td><%= f.text_field :perform_status_unit, id: "iau_perform_status_unit" %></td>
+          </tr>
+
+          <tr>
+            <td style="text-align: left; vertical-align: middle;">Pain Score</td>
+            <td><%= f.text_field :vitals_pain_score, id: "iau_vitals_pain_score" %></td>
+            <td><%= f.text_field :pain_score_units, id: "iau_pain_score_units" %></td>
+          </tr>
+        </table>
       </td>
     </tr>
-
-
-    <!-- BP Systolic -->
-    <tr>
-      <td>
-        <label>BP Systolic</label>
-      </td>
-
-      <td>
-        <%= f.text_field :vitals_bp_systolic,
-              id: "iau_vitals_bp_systolic",
-              style: "width:200px;" %>
-      </td>
-    </tr>
-
-
-    <!-- BP Diastolic -->
-    <tr>
-      <td>
-        <label>BP Diastolic</label>
-      </td>
-
-      <td>
-        <%= f.text_field :vitals_bp_diastolic,
-              id: "iau_vitals_bp_diastolic",
-              style: "width:200px;" %>
-      </td>
-    </tr>
-
-
-    <!-- Pulse -->
-    <tr>
-      <td>
-        <label>Pulse</label>
-      </td>
-
-      <td>
-        <%= f.text_field :vitals_pulse,
-              id: "iau_vitals_pulse",
-              style: "width:200px;" %>
-      </td>
-    </tr>
-
-
-    <!-- Respiratory Rate -->
-    <tr>
-      <td>
-        <label>Respiratory Rate</label>
-      </td>
-
-      <td>
-        <%= f.text_field :vitals_respiratory_rate,
-              id: "iau_vitals_respiratory_rate",
-              style: "width:200px;" %>
-      </td>
-    </tr>
-
-
-    <!-- Temperature -->
-    <tr>
-      <td>
-        <label>Temperature</label>
-      </td>
-
-      <td>
-        <%= f.text_field :vitals_temperature,
-              id: "iau_vitals_temperature",
-              style: "width:200px;" %>
-      </td>
-    </tr>
-
-
-    <!-- SpO2 -->
-    <tr>
-      <td>
-        <label>SpO2</label>
-      </td>
-
-      <td>
-        <%= f.text_field :vitals_spo2,
-              id: "iau_vitals_spo2",
-              style: "width:200px;" %>
-      </td>
-    </tr>
-
-
-    <!-- Pain Score -->
-    <tr>
-      <td>
-        <label>Pain Score</label>
-      </td>
-
-      <td>
-        <%= f.text_field :vitals_pain_score,
-              id: "iau_vitals_pain_score",
-              style: "width:200px;" %>
-      </td>
-    </tr>
-
 
     <!-- ===================================================== -->
     <!-- GENERAL EXAMINATION -->
     <!-- ===================================================== -->
-
     <tr>
-      <td colspan="2">
-        <strong>General Examination</strong>
+      <td colspan="2" style="padding-left:25px;">
+        <label style="color:#5a90cc;"><b>General Examination</b></label>
       </td>
     </tr>
 
-
-    <!-- Pallor -->
     <tr>
-      <td>
-        <label>Pallor</label>
-      </td>
-
-      <td>
-        <%= f.check_box :pallor,
-              id: "iau_pallor" %>
-
-        <span id="iau_pallor_ai"></span>
+      <td style="padding-left:25px; padding-bottom: 10px;"><label>Pallor</label></td>
+      <td style="padding-left:26px; padding-bottom: 10px; position: relative;">
+        <%= f.radio_button :pallor, true, id: "iau_pallor_true", onclick: "general_examination(this, 'pallor_text')" %> Yes
+        <%= f.radio_button :pallor, false, id: "iau_pallor_false", onclick: "general_examination(this, 'pallor_text')" %> No
+        <%= f.text_field :pallor_text, id: "pallor_text", name: "iau[pallor_text]", style: "display:none; position:absolute; top:0; left:165px; width:180px; box-sizing:border-box;" %>
       </td>
     </tr>
 
-
-    <!-- Icterus -->
     <tr>
-      <td>
-        <label>Icterus</label>
-      </td>
-
-      <td>
-        <%= f.check_box :icterus,
-              id: "iau_icterus" %>
-
-        <span id="iau_icterus_ai"></span>
+      <td style="padding-left:25px; padding-bottom: 10px;"><label>Icterus</label></td>
+      <td style="padding-left: 26px; padding-bottom: 10px; position: relative;">
+        <%= f.radio_button :icterus, true, id: "iau_icterus_true", onclick: "general_examination(this, 'icterus_text')" %> Yes
+        <%= f.radio_button :icterus, false, id: "iau_icterus_false", onclick: "general_examination(this, 'icterus_text')" %> No
+        <%= f.text_field :icterus_text, id: "icterus_text", name: "iau[icterus_text]", style: "display:none; position:absolute; top:0; left: 165px; width:180px; box-sizing:border-box;" %>
       </td>
     </tr>
 
-
-    <!-- Pedal Edema -->
     <tr>
-      <td>
-        <label>Pedal Edema</label>
-      </td>
-
-      <td>
-        <%= f.check_box :pedal_edema,
-              id: "iau_pedal_edema" %>
-
-        <span id="iau_pedal_edema_ai"></span>
+      <td style="padding-left:25px; padding-bottom: 10px;"><label>Pedal Edema</label></td>
+      <td style="padding-left: 26px; padding-bottom: 10px; position: relative;">
+        <%= f.radio_button :pedal_edema, true, id: "iau_pedal_edema_true", onclick: "general_examination(this, 'pedal_edema_text')" %> Yes
+        <%= f.radio_button :pedal_edema, false, id: "iau_pedal_edema_false", onclick: "general_examination(this, 'pedal_edema_text')" %> No
+        <%= f.text_field :pedal_edema_text, id: "pedal_edema_text", name: "iau[pedal_edema_text]", style: "display:none; position:absolute; top:0; left: 165px; width:180px; box-sizing:border-box;" %>
       </td>
     </tr>
-
 
     <!-- ===================================================== -->
     <!-- DIAGNOSIS -->
     <!-- ===================================================== -->
-
     <tr>
-      <td>
+      <td style="padding-left:25px;">
         <label>Diagnosis</label>
       </td>
-
-      <td>
-        <%= f.text_area :diagnosis,
-              id: "iau_diagnosis",
-              rows: 5,
-              style: "width:90%;" %>
+      <td style="padding-left:26px;">
+        <%= f.text_area :diagnosis, id: "iau_diagnosis", rows: 5, style: "width:90%;" %>
       </td>
     </tr>
-
 
     <!-- ===================================================== -->
     <!-- CHIEF COMPLAINTS -->
     <!-- ===================================================== -->
-
     <tr>
-      <td>
+      <td style="padding-left:25px;">
         <label>Chief Complaints</label>
       </td>
-
-      <td>
-        <%= f.text_area :chief_complaints,
-              id: "iau_chief_complaints",
-              rows: 5,
-              style: "width:90%;" %>
+      <td style="padding-left:26px;">
+        <%= f.text_area :chief_complaints, id: "iau_chief_complaints", rows: 5, style: "width:90%;" %>
       </td>
     </tr>
-
   </table>
-
   <br>
-
-  <%= f.submit "Save IAU Form",
-        style: "padding:10px 25px; cursor:pointer;" %>
-
+  <%= f.submit "Save IAU Form", style: "padding:10px 25px; cursor:pointer;" %>
 <% end %>
-
 
 <!-- ========================================================= -->
 <!-- JAVASCRIPT -->
 <!-- ========================================================= -->
-
 <script>
 function extractWithAI() {
-
   var sourceText = document.getElementById("source_text").value;
 
   if (!sourceText.trim()) {
@@ -321,310 +211,192 @@ function extractWithAI() {
   }
 
   var status = document.getElementById("extract_status");
-
   status.innerHTML = "Extracting information from patient document...";
 
   fetch("/patients/<%= @patient.id %>/iaus/extract", {
     method: "POST",
-
     headers: {
       "Content-Type": "application/json",
-      "X-CSRF-Token": document.querySelector(
-        'meta[name="csrf-token"]'
-      ).content
+      "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
     },
-
-    body: JSON.stringify({
-      source_text: sourceText
-    })
+    body: JSON.stringify({ source_text: sourceText })
   })
-
   .then(function(response) {
-
     if (!response.ok) {
       return response.json().then(function(errorData) {
-        throw new Error(
-          errorData.error || "AI extraction failed"
-        );
+        throw new Error(errorData.error || "AI extraction failed");
       });
     }
-
     return response.json();
   })
-
   .then(function(response) {
-
     console.log("FULL AI RESPONSE:", response);
 
     if (!response.success) {
-      throw new Error(
-        response.error || "AI extraction failed"
-      );
+      throw new Error(response.error || "AI extraction failed");
     }
-
-    /*
-     * IMPORTANT
-     *
-     * Controller is returning:
-     *
-     * {
-     *   success: true,
-     *   data: {
-     *     taken_by: "...",
-     *     given_by: "...",
-     *     ...
-     *   }
-     * }
-     *
-     * Therefore actual fields are inside response.data
-     */
 
     var data = response.data || {};
 
-    console.log("EXTRACTED DATA:", data);
+    // Fill text fields
+    fillField("iau_taken_by", data.taken_by);
+    fillField("iau_given_by", data.given_by);
+    fillField("iau_relation_with_patient", data.relation_with_patient);
+    fillField("iau_other_relation", data.other_relation_with_patient);
 
+    // Fill vitals
+    fillField("iau_vitals_bp_systolic", data.vitals_bp_systolic);
+    fillField("iau_vitals_bp_diastolic", data.vitals_bp_diastolic);
+    fillField("iau_vitals_pulse", data.vitals_pulse);
+    fillField("iau_vitals_respiratory_rate", data.vitals_respiratory_rate);
+    fillField("iau_vitals_temperature", data.vitals_temperature);
+    fillField("iau_vitals_spo2", data.vitals_spo2);
+    fillField("iau_spo2_units", data.spo2_units);
+    fillField("iau_vitals_perform_status", data.vitals_perform_status);
+    fillField("iau_perform_status_unit", data.perform_status_unit);
+    fillField("iau_vitals_pain_score", data.vitals_pain_score);
+    fillField("iau_pain_score_units", data.pain_score_units);
 
-    // ==========================================
-    // TAKEN BY
-    // ==========================================
+    // Fill general examination
+    setRadio("iau_pallor_true", "iau_pallor_false", data.pallor);
+    fillField("pallor_text", data.pallor_text);
 
-    fillField(
-      "iau_taken_by",
-      data.taken_by
-    );
+    setRadio("iau_icterus_true", "iau_icterus_false", data.icterus);
+    fillField("icterus_text", data.icterus_text);
 
+    setRadio("iau_pedal_edema_true", "iau_pedal_edema_false", data.pedal_edema);
+    fillField("pedal_edema_text", data.pedal_edema_text);
 
-    // ==========================================
-    // GIVEN BY
-    // ==========================================
+    // Fill diagnosis and complaints
+    fillField("iau_diagnosis", data.diagnosis);
+    fillField("iau_chief_complaints", data.chief_complaints);
 
-    fillField(
-      "iau_given_by",
-      data.given_by
-    );
-
-
-    // ==========================================
-    // RELATIONSHIP WITH PATIENT
-    // ==========================================
-
-    fillField(
-      "iau_relation_with_patient",
-      data.relation_with_patient
-    );
-
-
-    // ==========================================
-    // VITALS
-    // ==========================================
-
-    fillField(
-      "iau_vitals_bp_systolic",
-      data.vitals_bp_systolic
-    );
-
-    fillField(
-      "iau_vitals_bp_diastolic",
-      data.vitals_bp_diastolic
-    );
-
-    fillField(
-      "iau_vitals_pulse",
-      data.vitals_pulse
-    );
-
-    fillField(
-      "iau_vitals_respiratory_rate",
-      data.vitals_respiratory_rate
-    );
-
-    fillField(
-      "iau_vitals_temperature",
-      data.vitals_temperature
-    );
-
-    fillField(
-      "iau_vitals_spo2",
-      data.vitals_spo2
-    );
-
-    fillField(
-      "iau_vitals_pain_score",
-      data.vitals_pain_score
-    );
-
-
-    // ==========================================
-    // GENERAL EXAMINATION
-    // ==========================================
-
-    setCheckbox(
-      "iau_pallor",
-      data.pallor
-    );
-
-    setCheckbox(
-      "iau_icterus",
-      data.icterus
-    );
-
-    setCheckbox(
-      "iau_pedal_edema",
-      data.pedal_edema
-    );
-
-
-    // ==========================================
-    // DIAGNOSIS
-    // ==========================================
-
-    fillField(
-      "iau_diagnosis",
-      data.diagnosis
-    );
-
-
-    // ==========================================
-    // CHIEF COMPLAINTS
-    // ==========================================
-
-    fillField(
-      "iau_chief_complaints",
-      data.chief_complaints
-    );
-
-
-    status.innerHTML =
-      "AI extraction completed. Please review all highlighted fields before saving.";
-
+    status.innerHTML = "AI extraction completed. Please review all highlighted fields before saving.";
     status.style.color = "green";
 
-
     // Highlight AI-filled fields
-
     highlightField("iau_taken_by");
     highlightField("iau_given_by");
     highlightField("iau_relation_with_patient");
-
+    highlightField("iau_other_relation");
     highlightField("iau_vitals_bp_systolic");
     highlightField("iau_vitals_bp_diastolic");
     highlightField("iau_vitals_pulse");
     highlightField("iau_vitals_respiratory_rate");
     highlightField("iau_vitals_temperature");
     highlightField("iau_vitals_spo2");
+    highlightField("iau_spo2_units");
+    highlightField("iau_vitals_perform_status");
+    highlightField("iau_perform_status_unit");
     highlightField("iau_vitals_pain_score");
-
-    highlightField("iau_pallor");
-    highlightField("iau_icterus");
-    highlightField("iau_pedal_edema");
-
+    highlightField("iau_pain_score_units");
+    highlightField("pallor_text");
+    highlightField("icterus_text");
+    highlightField("pedal_edema_text");
     highlightField("iau_diagnosis");
     highlightField("iau_chief_complaints");
-
   })
-
   .catch(function(error) {
-
     console.error("EXTRACTION ERROR:", error);
-
-    status.innerHTML =
-      "Extraction failed: " + error.message;
-
+    status.innerHTML = "Extraction failed: " + error.message;
     status.style.color = "red";
-
   });
 }
 
-
-/*
- * ==========================================
- * FILL TEXT FIELD
- * ==========================================
- */
-
 function fillField(id, value) {
-
   var element = document.getElementById(id);
-
-  if (!element) {
-    console.warn("Field not found:", id);
-    return;
-  }
-
-  if (
-    value !== null &&
-    value !== undefined &&
-    String(value).trim() !== ""
-  ) {
-
+  if (!element) return;
+  if (value !== null && value !== undefined && String(value).trim() !== "") {
     element.value = value;
-
-    element.style.backgroundColor = "#fff8b3";
-  }
-}
-
-
-/*
- * ==========================================
- * CHECKBOX
- * ==========================================
- */
-
-function setCheckbox(id, value) {
-
-  var element = document.getElementById(id);
-
-  if (!element) {
-    console.warn("Checkbox not found:", id);
-    return;
-  }
-
-  if (
-    value === true ||
-    value === "true" ||
-    value === "True" ||
-    value === 1 ||
-    value === "1"
-  ) {
-
-    element.checked = true;
-
-  } else if (
-    value === false ||
-    value === "false" ||
-    value === "False" ||
-    value === 0 ||
-    value === "0"
-  ) {
-
-    element.checked = false;
-  }
-
-}
-
-
-/*
- * ==========================================
- * HIGHLIGHT AI FILLED FIELD
- * ==========================================
- */
-
-function highlightField(id) {
-
-  var element = document.getElementById(id);
-
-  if (!element) {
-    return;
-  }
-
-  if (
-    element.value !== undefined &&
-    String(element.value).trim() !== ""
-  ) {
-
     element.style.backgroundColor = "#fff8b3";
     element.style.border = "2px solid #e0b400";
   }
+}
 
+function setRadio(yesId, noId, value) {
+  var yesRadio = document.getElementById(yesId);
+  var noRadio = document.getElementById(noId);
+  if (!yesRadio || !noRadio) return;
+
+  if (value === true || value === "true" || value === "True" || value === 1 || value === "1") {
+    yesRadio.checked = true;
+    noRadio.checked = false;
+    yesRadio.style.backgroundColor = "#fff8b3";
+    noRadio.style.backgroundColor = "";
+  } else if (value === false || value === "false" || value === "False" || value === 0 || value === "0") {
+    yesRadio.checked = false;
+    noRadio.checked = true;
+    yesRadio.style.backgroundColor = "";
+    noRadio.style.backgroundColor = "#fff8b3";
+  }
+}
+
+function highlightField(id) {
+  var element = document.getElementById(id);
+  if (!element) return;
+  if (element.value !== undefined && String(element.value).trim() !== "") {
+    element.style.backgroundColor = "#fff8b3";
+    element.style.border = "2px solid #e0b400";
+  }
+}
+
+// Keep your existing functions
+function general_examination(radio, text_box) {
+  const row = document.getElementById(text_box);
+  if (!row) return;
+  row.style.display = (radio.value === "true") ? 'table-cell' : 'none';
+  if (radio.value !== "true") {
+    const input = row.querySelector('input');
+    if (input) input.value = '';
+  }
+}
+
+function toggleVisibilityRadio(radio, showId, displayType) {
+  var element = document.getElementById(showId);
+  element.style.display = radio.checked ? displayType : "none";
+}
+
+function toggleVisibilityCheckbox(checkbox, showId, displayType = "block") {
+  var element = document.getElementById(showId);
+  element.style.display = checkbox.checked ? displayType : "none";
 }
 </script>
+
+<style>
+  #vitals, #vitals > tbody > tr > th, #vitals > tbody > tr > td {
+    border: 1px solid #00000047;
+    border-collapse: collapse;
+  }
+
+  #vitals > tbody > tr td:first-child,
+  #vitals > tbody > tr td:last-child {
+    padding-left: 5px;
+  }
+
+  label {font-weight: bold;}
+
+  .fixed-width-220 {
+    width: 220px !important;
+    max-width: 220px !important;
+  }
+
+  .vitals-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    margin-bottom: 15px;
+  }
+
+  .vitals-table input {
+    margin-top: 5px;
+  }
+
+  .vitals-table th,
+  .vitals-table td {
+    border: 1px solid #00000047;
+    padding: 3px;
+    font-size: 13px;
+    vertical-align: middle;
+    text-align: center;
+  }
+</style>

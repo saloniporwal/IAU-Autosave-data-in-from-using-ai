@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_01_065906) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_01_053419) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -39,28 +39,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_01_065906) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
-  create_table "iaus", force: :cascade do |t|
-    t.text "chief_complaints"
-    t.datetime "created_at", null: false
-    t.text "diagnosis"
-    t.string "given_by"
-    t.boolean "icterus"
-    t.boolean "pallor"
-    t.integer "patient_id", null: false
-    t.boolean "pedal_edema"
-    t.string "relation_with_patient"
-    t.string "taken_by"
-    t.datetime "updated_at", null: false
-    t.string "vitals_bp_diastolic"
-    t.string "vitals_bp_systolic"
-    t.string "vitals_pain_score"
-    t.string "vitals_pulse"
-    t.string "vitals_respiratory_rate"
-    t.string "vitals_spo2"
-    t.string "vitals_temperature"
-    t.index ["patient_id"], name: "index_iaus_on_patient_id"
-  end
-
   create_table "patient_reports", force: :cascade do |t|
     t.boolean "ai_processed"
     t.text "ai_result"
@@ -82,5 +60,4 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_01_065906) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "iaus", "patients"
 end
