@@ -6,8 +6,10 @@ Rails.application.routes.draw do
 
     resources :iaus, only: [:new, :create, :show, :edit, :update] do
       post :extract, on: :collection
+       post "iaus/extract",to: "iaus#extract"
+       post "iaus/extract_pdf",to: "iaus#extract_pdf"
     end
-
+   
   end 
 
 end

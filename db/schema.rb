@@ -39,6 +39,39 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_01_053419) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+<<<<<<< HEAD
+=======
+  create_table "iaus", force: :cascade do |t|
+    t.text "chief_complaints"
+    t.datetime "created_at", null: false
+    t.text "diagnosis"
+    t.string "given_by"
+    t.boolean "icterus"
+    t.text "icterus_text"
+    t.text "other_relation_with_patient"
+    t.string "pain_score_units"
+    t.boolean "pallor"
+    t.text "pallor_text"
+    t.integer "patient_id", null: false
+    t.boolean "pedal_edema"
+    t.text "pedal_edema_text"
+    t.string "perform_status_unit"
+    t.string "relation_with_patient"
+    t.string "spo2_units"
+    t.string "taken_by"
+    t.datetime "updated_at", null: false
+    t.string "vitals_bp_diastolic"
+    t.string "vitals_bp_systolic"
+    t.string "vitals_pain_score"
+    t.text "vitals_perform_status"
+    t.string "vitals_pulse"
+    t.string "vitals_respiratory_rate"
+    t.string "vitals_spo2"
+    t.string "vitals_temperature"
+    t.index ["patient_id"], name: "index_iaus_on_patient_id"
+  end
+
+>>>>>>> 19f6206 ( add document attchment)
   create_table "patient_reports", force: :cascade do |t|
     t.boolean "ai_processed"
     t.text "ai_result"

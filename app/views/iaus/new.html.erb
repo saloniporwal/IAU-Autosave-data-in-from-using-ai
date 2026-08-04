@@ -1,17 +1,34 @@
 <h1>IAU Auto-Fill</h1>
 <hr>
 
-<!-- ========================================================= -->
-<!-- STEP 1 : SOURCE DOCUMENT -->
-<!-- ========================================================= -->
-
 <h2>Step 1 - Source Document</h2>
 <div>
-  <label for="source_text">
+  <label>
+    <strong>Upload Patient Report (PDF)</strong>
+  </label>
+</div>
+
+<br>
+
+<%= file_field_tag :patient_report,
+      id: "patient_report",
+      accept: "application/pdf" %>
+
+<br><br>
+
+<div style="text-align:center;">
+  OR
+</div>
+
+<br>
+
+<div>
+  <label>
     <strong>Paste Patient Document</strong>
   </label>
 </div>
 <br>
+<<<<<<< HEAD
 <textarea id="source_text" rows="12" style="width:100%;" placeholder="Paste discharge summary, diagnosis report, prescription, clinical notes etc."></textarea>
 <br><br>
 <button type="button" id="extract_button" onclick="extractWithAI()">Extract With AI</button>
@@ -21,6 +38,29 @@
 <!-- ========================================================= -->
 <!-- STEP 2 : IAU FORM -->
 <!-- ========================================================= -->
+=======
+
+<textarea
+  id="source_text"
+  rows="12"
+  style="width:100%;"
+  placeholder="Paste discharge summary, diagnosis report, prescription, clinical notes etc."></textarea>
+
+<br><br>
+
+<button
+  type="button"
+  id="extract_button"
+  onclick="extractWithAI()">
+  Extract With AI
+</button>
+
+<div
+  id="extract_status"
+  style="margin-top:15px;font-weight:bold;">
+</div>
+
+>>>>>>> 19f6206 ( add document attchment)
 
 <h2>Step 2 - IAU Form</h2>
 
@@ -116,7 +156,11 @@
           <tr>
             <td style="text-align: left; vertical-align: middle;">SpO₂</td>
             <td><%= f.text_field :vitals_spo2, id: "iau_vitals_spo2" %></td>
+<<<<<<< HEAD
             <td><%= f.text_field :spo2_units, id: "iau_spo2_units" %></td>
+=======
+            <td><%= f.text_field :spo2_units, id:  "iau_spo2_units" %></td>
+>>>>>>> 19f6206 ( add document attchment)
           </tr>
 
           <tr>
@@ -195,123 +239,200 @@
     </tr>
   </table>
   <br>
+<<<<<<< HEAD
   <%= f.submit "Save IAU Form", style: "padding:10px 25px; cursor:pointer;" %>
+=======
+  <%= f.submit "Save ", style: "padding:10px 25px; cursor:pointer; colour:red " %>
+>>>>>>> 19f6206 ( add document attchment)
 <% end %>
 
 <!-- ========================================================= -->
 <!-- JAVASCRIPT -->
 <!-- ========================================================= -->
 <script>
+
+
 function extractWithAI() {
   var sourceText = document.getElementById("source_text").value;
+  var pdfInput = document.getElementById("patient_report");
+  var button = document.getElementById("extract_button");
+  var status = document.getElementById("extract_status");
+<<<<<<< HEAD
+  status.innerHTML = "Extracting information from patient document...";
+=======
 
-  if (!sourceText.trim()) {
-    alert("Please enter patient document text.");
-    return;
+  var formData = new FormData();
+>>>>>>> 19f6206 ( add document attchment)
+
+  // PDF selected hai to PDF bhejo
+  if (pdfInput && pdfInput.files.length > 0) {
+    formData.append("patient_report", pdfInput.files[0]);
   }
 
-  var status = document.getElementById("extract_status");
-  status.innerHTML = "Extracting information from patient document...";
+  // Text bhi bhejo
+  formData.append("source_text", sourceText);
 
-  fetch("/patients/<%= @patient.id %>/iaus/extract", {
+  button.disabled = true;
+  button.innerText = "Extracting...";
+
+  status.innerHTML = "⏳ Reading patient report and extracting information...";
+
+  fetch("<%= extract_patient_iaus_path(@patient) %>", {
     method: "POST",
     headers: {
-      "Content-Type": "application/json",
-      "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
+      "X-CSRF-Token": document.querySelector(
+        'meta[name="csrf-token"]'
+      ).content,
+      "Accept": "application/json"
     },
-    body: JSON.stringify({ source_text: sourceText })
+    body: formData
   })
-  .then(function(response) {
-    if (!response.ok) {
-      return response.json().then(function(errorData) {
-        throw new Error(errorData.error || "AI extraction failed");
-      });
+  .then(async function(response) {
+
+    var contentType = response.headers.get("content-type") || "";
+    var responseText = await response.text();
+
+    if (!contentType.includes("application/json")) {
+      console.error("Server returned:", responseText);
+
+      throw new Error(
+        "Server did not return JSON. HTTP Status: " +
+        response.status
+      );
     }
-    return response.json();
+
+    var data = JSON.parse(responseText);
+
+    if (!response.ok || data.success === false) {
+      throw new Error(data.error || "Extraction failed");
+    }
+
+    return data;
   })
-  .then(function(response) {
-    console.log("FULL AI RESPONSE:", response);
+  .then(function(data) {
 
-    if (!response.success) {
-      throw new Error(response.error || "AI extraction failed");
+    // IMPORTANT:
+    // Tumhare controller mein data result ke andar aa raha hai
+    var result = data.data || data;
+
+    fillField("iau_taken_by", result.taken_by);
+    fillField("iau_given_by", result.given_by);
+    fillField(
+      "iau_relation_with_patient",
+      result.relation_with_patient
+    );
+
+    fillField(
+      "iau_vitals_bp_systolic",
+      result.vitals_bp_systolic
+    );
+
+    fillField(
+      "iau_vitals_bp_diastolic",
+      result.vitals_bp_diastolic
+    );
+
+    fillField(
+      "iau_vitals_pulse",
+      result.vitals_pulse
+    );
+
+    fillField(
+      "iau_vitals_respiratory_rate",
+      result.vitals_respiratory_rate
+    );
+
+    fillField(
+      "iau_vitals_temperature",
+      result.vitals_temperature
+    );
+
+    fillField(
+      "iau_vitals_spo2",
+      result.vitals_spo2
+    );
+
+    fillField(
+      "iau_vitals_pain_score",
+      result.vitals_pain_score
+    );
+
+    fillField(
+      "iau_diagnosis",
+      result.diagnosis
+    );
+
+    fillField(
+      "iau_chief_complaints",
+      result.chief_complaints
+    );
+
+
+    // Boolean fields
+    if (result.pallor !== null &&
+        result.pallor !== undefined) {
+
+      document.getElementById("iau_pallor").checked =
+        result.pallor === true ||
+        result.pallor === "true";
     }
 
-    var data = response.data || {};
+    if (result.icterus !== null &&
+        result.icterus !== undefined) {
 
-    // Fill text fields
-    fillField("iau_taken_by", data.taken_by);
-    fillField("iau_given_by", data.given_by);
-    fillField("iau_relation_with_patient", data.relation_with_patient);
-    fillField("iau_other_relation", data.other_relation_with_patient);
+      document.getElementById("iau_icterus").checked =
+        result.icterus === true ||
+        result.icterus === "true";
+    }
 
-    // Fill vitals
-    fillField("iau_vitals_bp_systolic", data.vitals_bp_systolic);
-    fillField("iau_vitals_bp_diastolic", data.vitals_bp_diastolic);
-    fillField("iau_vitals_pulse", data.vitals_pulse);
-    fillField("iau_vitals_respiratory_rate", data.vitals_respiratory_rate);
-    fillField("iau_vitals_temperature", data.vitals_temperature);
-    fillField("iau_vitals_spo2", data.vitals_spo2);
-    fillField("iau_spo2_units", data.spo2_units);
-    fillField("iau_vitals_perform_status", data.vitals_perform_status);
-    fillField("iau_perform_status_unit", data.perform_status_unit);
-    fillField("iau_vitals_pain_score", data.vitals_pain_score);
-    fillField("iau_pain_score_units", data.pain_score_units);
+    if (result.pedal_edema !== null &&
+        result.pedal_edema !== undefined) {
 
-    // Fill general examination
-    setRadio("iau_pallor_true", "iau_pallor_false", data.pallor);
-    fillField("pallor_text", data.pallor_text);
+      document.getElementById("iau_pedal_edema").checked =
+        result.pedal_edema === true ||
+        result.pedal_edema === "true";
+    }
 
-    setRadio("iau_icterus_true", "iau_icterus_false", data.icterus);
-    fillField("icterus_text", data.icterus_text);
+    status.innerHTML =
+      "✅ AI extraction completed. Please review all highlighted fields before saving.";
 
-    setRadio("iau_pedal_edema_true", "iau_pedal_edema_false", data.pedal_edema);
-    fillField("pedal_edema_text", data.pedal_edema_text);
-
-    // Fill diagnosis and complaints
-    fillField("iau_diagnosis", data.diagnosis);
-    fillField("iau_chief_complaints", data.chief_complaints);
-
-    status.innerHTML = "AI extraction completed. Please review all highlighted fields before saving.";
-    status.style.color = "green";
-
-    // Highlight AI-filled fields
-    highlightField("iau_taken_by");
-    highlightField("iau_given_by");
-    highlightField("iau_relation_with_patient");
-    highlightField("iau_other_relation");
-    highlightField("iau_vitals_bp_systolic");
-    highlightField("iau_vitals_bp_diastolic");
-    highlightField("iau_vitals_pulse");
-    highlightField("iau_vitals_respiratory_rate");
-    highlightField("iau_vitals_temperature");
-    highlightField("iau_vitals_spo2");
-    highlightField("iau_spo2_units");
-    highlightField("iau_vitals_perform_status");
-    highlightField("iau_perform_status_unit");
-    highlightField("iau_vitals_pain_score");
-    highlightField("iau_pain_score_units");
-    highlightField("pallor_text");
-    highlightField("icterus_text");
-    highlightField("pedal_edema_text");
-    highlightField("iau_diagnosis");
-    highlightField("iau_chief_complaints");
   })
   .catch(function(error) {
-    console.error("EXTRACTION ERROR:", error);
-    status.innerHTML = "Extraction failed: " + error.message;
-    status.style.color = "red";
+
+    console.error(error);
+
+    status.innerHTML =
+      "❌ Extraction failed: " + error.message;
+
+  })
+  .finally(function() {
+
+    button.disabled = false;
+    button.innerText = "Extract With AI";
+
   });
 }
 
+
 function fillField(id, value) {
-  var element = document.getElementById(id);
-  if (!element) return;
-  if (value !== null && value !== undefined && String(value).trim() !== "") {
-    element.value = value;
-    element.style.backgroundColor = "#fff8b3";
-    element.style.border = "2px solid #e0b400";
+
+  if (
+    value !== null &&
+    value !== undefined &&
+    String(value).trim() !== ""
+  ) {
+
+    var element = document.getElementById(id);
+
+    if (element) {
+      element.value = value;
+      element.style.backgroundColor = "#fff8a6";
+    }
   }
 }
+    
+
+ 
 
 function setRadio(yesId, noId, value) {
   var yesRadio = document.getElementById(yesId);
