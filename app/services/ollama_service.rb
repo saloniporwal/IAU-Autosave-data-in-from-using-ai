@@ -11,8 +11,8 @@ class OllamaService
     body[:images] = images if images.present?
 
     response = Faraday.new do |conn|
-      conn.options.timeout = 180        # total response ka max wait time (3 minute)
-      conn.options.open_timeout = 15    # connection banne ka max wait time
+      conn.options.timeout = 180       
+      conn.options.open_timeout = 15    
       conn.adapter Faraday.default_adapter
     end.post(OLLAMA_URL) do |req|
       req.headers["Content-Type"] = "application/json"

@@ -1,6 +1,5 @@
 class PdfTextExtractor
 
-
 def extract_pdf
 
   @patient = Patient.find(params[:patient_id])
@@ -50,67 +49,32 @@ def extract_pdf
 end
 
 
-def extract
-  @patient = Patient.find(params[:patient_id])
-
-  source_text = params[:source_text].to_s
-
-  # PDF uploaded?
-  if params[:patient_report].present?
+def self.extract(uploaded_file)
+    tempfile = Tempfile.new(["patient_report", ".pdf"])
 
     begin
-      pdf_text = PdfTextExtractor.extract(params[:patient_report])
+      uploaded_file.rewind
 
-      if pdf_text.present?
-        source_text = pdf_text
-      end
+      tempfile.binmode
+      tempfile.write(uploaded_file.read)
+      tempfile.flush
+      tempfile.rewind
 
-    rescue => e
-      Rails.logger.error(
-        "PDF EXTRACTION ERROR: #{e.class}: #{e.message}"
+      reader = PDF::Reader.new(tempfile.path)
+
+      text = reader.pages.map { |page| page.text.to_s }.join("\n")
+
+      text.encode(
+        "UTF-8",
+        invalid: :replace,
+        undef: :replace,
+        replace: ""
       )
-
-      render json: {
-        success: false,
-        error: "Unable to read PDF: #{e.message}"
-      }, status: :unprocessable_entity
-
-      return
+    ensure
+      tempfile.close
+      tempfile.unlink
     end
   end
-
-  if source_text.blank?
-
-    render json: {
-      success: false,
-      error: "Please upload a PDF or provide patient document text."
-    }, status: :bad_request
-
-    return
-  end
-
-  begin
-
-    result = IauExtractionService.new(source_text).call
-
-    render json: {
-      success: true,
-      data: result
-    }, status: :ok
-
-  rescue => e
-
-    Rails.logger.error(
-      "IAU EXTRACTION ERROR: #{e.class}: #{e.message}"
-    )
-
-    render json: {
-      success: false,
-      error: e.message
-    }, status: :internal_server_error
-  end
-end
-
 
 
 end

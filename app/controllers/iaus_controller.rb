@@ -7,11 +7,11 @@ class IausController < ApplicationController
 
   def create
     @patient = Patient.find(params[:patient_id])
-
     @iau = @patient.iaus.new(iau_params)
-    
+
     if @iau.save
-      redirect_to patient_iau_path(@patient, @iau), notice: "IAU saved successfully."
+      redirect_to patient_iau_path(@patient, @iau),
+                  notice: "IAU saved successfully."
     else
       render :new, status: :unprocessable_entity
     end
@@ -35,29 +35,99 @@ class IausController < ApplicationController
       redirect_to patient_iau_path(@patient, @iau),
                   notice: "IAU updated successfully."
     else
-      render :edit
+      render :edit, status: :unprocessable_entity
     end
   end
 
-def extract
-  source_text = params[:source_text]
+  # =========================================================
+  # AI EXTRACTION
+  # =========================================================
 
-  if source_text.blank?
-    render json: { success: false, error: "No source text provided" }, status: 400
-    return
+  def extract
+    source_text = params[:source_text].to_s.strip
+
+    # -------------------------------------------------------
+    # PDF uploaded
+    # -------------------------------------------------------
+
+    if params[:patient_report].present?
+
+      uploaded_file = params[:patient_report]
+
+      begin
+        Rails.logger.info "======================================"
+        Rails.logger.info "PDF received"
+        Rails.logger.info "Filename: #{uploaded_file.original_filename}"
+        Rails.logger.info "Content type: #{uploaded_file.content_type}"
+        Rails.logger.info "======================================"
+
+        pdf_text = PdfTextExtractor.extract(uploaded_file)
+
+        Rails.logger.info "PDF extracted text length: #{pdf_text.to_s.length}"
+
+        if pdf_text.blank?
+          return render json: {
+            success: false,
+            error: "PDF was uploaded but no readable text was found."
+          }, status: :unprocessable_entity
+        end
+
+        # Combine pasted text + PDF text
+        source_text = [
+          source_text,
+          pdf_text
+        ].reject(&:blank?).join("\n\n")
+
+      rescue StandardError => e
+
+        Rails.logger.error "PDF extraction error: #{e.class}"
+        Rails.logger.error e.message
+        Rails.logger.error e.backtrace.first(10).join("\n")
+
+        return render json: {
+          success: false,
+          error: "Unable to read uploaded PDF: #{e.message}"
+        }, status: :unprocessable_entity
+      end
+    end
+
+    # -------------------------------------------------------
+    # No text available
+    # -------------------------------------------------------
+
+    if source_text.blank?
+      return render json: {
+        success: false,
+        error: "Please upload a patient report or enter patient document text."
+      }, status: :unprocessable_entity
+    end
+
+    Rails.logger.info "Final source text length: #{source_text.length}"
+
+    # -------------------------------------------------------
+    # Send extracted text to AI
+    # -------------------------------------------------------
+
+    begin
+      result = IauExtractionService.extract_iau_data(source_text)
+
+      render json: {
+        success: true,
+        data: result
+      }
+
+    rescue StandardError => e
+
+      Rails.logger.error "AI extraction error: #{e.class}"
+      Rails.logger.error e.message
+      Rails.logger.error e.backtrace.first(10).join("\n")
+
+      render json: {
+        success: false,
+        error: "AI extraction failed: #{e.message}"
+      }, status: :unprocessable_entity
+    end
   end
-
-  data = IauExtractionService.new(source_text).call
-  render json: { success: true, data: data }
-
-rescue Faraday::TimeoutError, Net::ReadTimeout => e
-  Rails.logger.error("Ollama timeout: #{e.message}")
-  render json: { success: false, error: "AI is taking too long to respond. Please try again — local AI models can be slow on the first request." }, status: 504
-
-rescue => e
-  Rails.logger.error("IAU extraction failed: #{e.class} - #{e.message}")
-  render json: { success: false, error: e.message }, status: 500
-end    
 
   private
 

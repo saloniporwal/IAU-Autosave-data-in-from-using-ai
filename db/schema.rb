@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_01_053419) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_01_065906) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -44,18 +44,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_01_053419) do
     t.datetime "created_at", null: false
     t.text "diagnosis"
     t.string "given_by"
+    t.boolean "iau_icterus"
+    t.boolean "iau_pallor"
+    t.boolean "iau_pedal_edema"
     t.boolean "icterus"
     t.text "icterus_text"
     t.text "other_relation_with_patient"
-    t.string "pain_score_units"
     t.boolean "pallor"
     t.text "pallor_text"
     t.integer "patient_id", null: false
     t.boolean "pedal_edema"
     t.text "pedal_edema_text"
-    t.string "perform_status_unit"
     t.string "relation_with_patient"
-    t.string "spo2_units"
     t.string "taken_by"
     t.datetime "updated_at", null: false
     t.string "vitals_bp_diastolic"
@@ -90,4 +90,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_01_053419) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "iaus", "patients"
 end

@@ -28,17 +28,6 @@
   </label>
 </div>
 <br>
-<<<<<<< HEAD
-<textarea id="source_text" rows="12" style="width:100%;" placeholder="Paste discharge summary, diagnosis report, prescription, clinical notes etc."></textarea>
-<br><br>
-<button type="button" id="extract_button" onclick="extractWithAI()">Extract With AI</button>
-<div id="extract_status" style="margin-top:15px; font-weight:bold;"></div>
-<hr>
-
-<!-- ========================================================= -->
-<!-- STEP 2 : IAU FORM -->
-<!-- ========================================================= -->
-=======
 
 <textarea
   id="source_text"
@@ -60,7 +49,6 @@
   style="margin-top:15px;font-weight:bold;">
 </div>
 
->>>>>>> 19f6206 ( add document attchment)
 
 <h2>Step 2 - IAU Form</h2>
 
@@ -105,9 +93,7 @@
       </td>
     </tr>
 
-    <!-- ===================================================== -->
     <!-- VITALS -->
-    <!-- ===================================================== -->
     <tr>
       <td colspan="2" style="padding-left:25px;">
         <label style="color:#5a90cc;"><b>Vitals</b></label>
@@ -156,31 +142,23 @@
           <tr>
             <td style="text-align: left; vertical-align: middle;">SpO₂</td>
             <td><%= f.text_field :vitals_spo2, id: "iau_vitals_spo2" %></td>
-<<<<<<< HEAD
-            <td><%= f.text_field :spo2_units, id: "iau_spo2_units" %></td>
-=======
-            <td><%= f.text_field :spo2_units, id:  "iau_spo2_units" %></td>
->>>>>>> 19f6206 ( add document attchment)
           </tr>
 
           <tr>
             <td style="text-align: left; vertical-align: middle;">Performance Status</td>
             <td><%= f.text_field :vitals_perform_status, id: "iau_vitals_perform_status" %></td>
-            <td><%= f.text_field :perform_status_unit, id: "iau_perform_status_unit" %></td>
           </tr>
 
           <tr>
             <td style="text-align: left; vertical-align: middle;">Pain Score</td>
             <td><%= f.text_field :vitals_pain_score, id: "iau_vitals_pain_score" %></td>
-            <td><%= f.text_field :pain_score_units, id: "iau_pain_score_units" %></td>
           </tr>
         </table>
       </td>
     </tr>
 
-    <!-- ===================================================== -->
     <!-- GENERAL EXAMINATION -->
-    <!-- ===================================================== -->
+   
     <tr>
       <td colspan="2" style="padding-left:25px;">
         <label style="color:#5a90cc;"><b>General Examination</b></label>
@@ -214,9 +192,7 @@
       </td>
     </tr>
 
-    <!-- ===================================================== -->
-    <!-- DIAGNOSIS -->
-    <!-- ===================================================== -->
+
     <tr>
       <td style="padding-left:25px;">
         <label>Diagnosis</label>
@@ -226,9 +202,7 @@
       </td>
     </tr>
 
-    <!-- ===================================================== -->
-    <!-- CHIEF COMPLAINTS -->
-    <!-- ===================================================== -->
+
     <tr>
       <td style="padding-left:25px;">
         <label>Chief Complaints</label>
@@ -239,37 +213,24 @@
     </tr>
   </table>
   <br>
-<<<<<<< HEAD
-  <%= f.submit "Save IAU Form", style: "padding:10px 25px; cursor:pointer;" %>
-=======
   <%= f.submit "Save ", style: "padding:10px 25px; cursor:pointer; colour:red " %>
->>>>>>> 19f6206 ( add document attchment)
 <% end %>
 
-<!-- ========================================================= -->
-<!-- JAVASCRIPT -->
-<!-- ========================================================= -->
-<script>
 
+<script>
 
 function extractWithAI() {
   var sourceText = document.getElementById("source_text").value;
   var pdfInput = document.getElementById("patient_report");
   var button = document.getElementById("extract_button");
   var status = document.getElementById("extract_status");
-<<<<<<< HEAD
-  status.innerHTML = "Extracting information from patient document...";
-=======
 
   var formData = new FormData();
->>>>>>> 19f6206 ( add document attchment)
 
-  // PDF selected hai to PDF bhejo
   if (pdfInput && pdfInput.files.length > 0) {
     formData.append("patient_report", pdfInput.files[0]);
   }
 
-  // Text bhi bhejo
   formData.append("source_text", sourceText);
 
   button.disabled = true;
@@ -311,8 +272,6 @@ function extractWithAI() {
   })
   .then(function(data) {
 
-    // IMPORTANT:
-    // Tumhare controller mein data result ke andar aa raha hai
     var result = data.data || data;
 
     fillField("iau_taken_by", result.taken_by);
@@ -367,32 +326,6 @@ function extractWithAI() {
       result.chief_complaints
     );
 
-
-    // Boolean fields
-    if (result.pallor !== null &&
-        result.pallor !== undefined) {
-
-      document.getElementById("iau_pallor").checked =
-        result.pallor === true ||
-        result.pallor === "true";
-    }
-
-    if (result.icterus !== null &&
-        result.icterus !== undefined) {
-
-      document.getElementById("iau_icterus").checked =
-        result.icterus === true ||
-        result.icterus === "true";
-    }
-
-    if (result.pedal_edema !== null &&
-        result.pedal_edema !== undefined) {
-
-      document.getElementById("iau_pedal_edema").checked =
-        result.pedal_edema === true ||
-        result.pedal_edema === "true";
-    }
-
     status.innerHTML =
       "✅ AI extraction completed. Please review all highlighted fields before saving.";
 
@@ -432,8 +365,6 @@ function fillField(id, value) {
 }
     
 
- 
-
 function setRadio(yesId, noId, value) {
   var yesRadio = document.getElementById(yesId);
   var noRadio = document.getElementById(noId);
@@ -461,7 +392,6 @@ function highlightField(id) {
   }
 }
 
-// Keep your existing functions
 function general_examination(radio, text_box) {
   const row = document.getElementById(text_box);
   if (!row) return;
