@@ -27,4 +27,4 @@ jobs:
         run: bin/rails -v
 
       - name: Run Rails tests
-        run: bin/rails test
+        run: bin/rails test 
