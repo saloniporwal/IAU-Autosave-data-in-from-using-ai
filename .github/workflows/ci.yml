@@ -14,11 +14,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Ruby
+      - name: Setup Ruby 3.4.7
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.4'
+          ruby-version: '3.4.7'
           bundler-cache: true
+
+      - name: Check Ruby version
+        run: ruby -v
+
+      - name: Check Rails version
+        run: bin/rails -v
 
       - name: Run Rails tests
         run: bin/rails test
